@@ -12,7 +12,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * @author Anish Singh(anish2u2@gmail.com)
@@ -24,7 +28,8 @@ import javax.persistence.Table;
 public class UserDetails {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(initialValue = 1,allocationSize = 1,sequenceName = "USER_DETAILS_INCREAMENTOR", name = "USER_DETAILS_INCREAMENTOR")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_DETAILS_INCREAMENTOR")
 	@Column(name = "USER_DETAILS_ID")
 	private Long id;
 	
@@ -38,7 +43,8 @@ public class UserDetails {
 	private Date birthday;
 	
 	@OneToOne
-	@JoinColumn(name = "REGISTRATION_ID", referencedColumnName = "REGISTRATION_ID")
+	@JoinColumn(name = "REGISTRATION_ID")
+	@Cascade(CascadeType.ALL)
 	private Registration registration;
 
 	/**
