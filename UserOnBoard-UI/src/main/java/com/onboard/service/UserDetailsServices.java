@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.onboard.dao.UserRolesDao;
+import com.onboard.dao.OnBoardDao;
 import com.onboard.entity.Role;
 import com.onboard.entity.User;
 import com.onboard.repos.UserDetailsRepository;
@@ -36,7 +36,7 @@ public class UserDetailsServices implements UserDetailsService{
 	private UserDetailsRepository userDetailsRepo;
 	
 	@Autowired
-	private UserRolesDao<Role> userRoleDao;
+	private OnBoardDao<Role> userRoleDao;
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;

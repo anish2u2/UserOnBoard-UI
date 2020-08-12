@@ -74,6 +74,8 @@ public class UserOnBoardConfig extends WebSecurityConfigurerAdapter implements W
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/javascript/*").addResourceLocations("classpath:static/javascript/");
+		registry.addResourceHandler("/vue/*").addResourceLocations("classpath:static/vue/");
+		registry.addResourceHandler("/css/*").addResourceLocations("classpath:static/css/");
 		registry.addResourceHandler("/templates/*").addResourceLocations("classpath:templates/");
 	}
 
