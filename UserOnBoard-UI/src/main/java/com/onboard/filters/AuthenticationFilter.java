@@ -141,7 +141,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	public String getRegistrationToken(HttpServletRequest request) {
-		return request.getParameter("tempToken");
+		return request.getParameter("x-registration-token");
 	}
 
 	public boolean isRegistrationRequest(HttpServletRequest request) {
@@ -155,9 +155,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 			headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-			headers.add("tempToken", token);
+			headers.add("x-registration-token", token);
 			Map<String, String> uriVar=new HashMap<>();
-			uriVar.put("tempToken", token);
+			uriVar.put("x-registration-token", token);
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			ResponseEntity<Response> response = restTemplate.getForEntity(ssoSessionRegAuthUrl, Response.class, uriVar);
 			if (response.getStatusCode() == HttpStatus.OK) {

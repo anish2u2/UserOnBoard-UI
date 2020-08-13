@@ -26,7 +26,7 @@ public class JwtTokenUtil {
 
 	private static final long serialVersionUID = 34856437L;
 
-	public static final long JWT_TOKEN_VALIDITY = 600000l;
+	public static final long JWT_TOKEN_VALIDITY = 300000l;
 
 	@Value("${sso.auth.key}")
 

@@ -14,12 +14,12 @@ public class LoginController {
 	
 	@RequestMapping(path="/login")
 	public String login() {
-		return "index";
+		return "home";
 	}
 	
 	@RequestMapping(path="/register")
 	public String register() {
-		return "register";
+		return "home";
 	}
 	
 	@RequestMapping(path="/home")

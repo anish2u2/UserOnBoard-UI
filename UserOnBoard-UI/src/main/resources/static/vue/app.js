@@ -1,261 +1,153 @@
 
-var renderDoc={
-    
-    template:`<div>
-
-    <div class="form-group">
-        <div class="has-error" v-show="hasError">{{errorMessage}}</div>
-        <input type="text" class="form-control" value="docTitle" v-model="docTitle" :placeholder="documentPlaceholder"/>
-        <input type="hidden"  v-model="defaultDocName"/>
-    </div><br/>
-
-
-    <textarea id="docEditArea" class="form-control" rows="10" v-model="docText" :placeholder="editDocPlaceholder"></textarea>
-    <br/>
-
-    <table>
-        <tr>
-            <td v-if="isSaveEnabled" ><input type="image" v-if="isSaveEnabled" v-model="docId" src="../images/save.jpg" alt="Save" style="width:50px;height:50px;" @click="saveDoc()"/></td>
-            <td v-if="!isSaveEnabled" ><input type="image" v-if="!isSaveEnabled" v-model="docId" src="../images/update.jpg" alt="Update" style="width:50px;height:50px;" @click="updateDoc()"/></td>
-            <td ><input type="image" v-model="docId" src="../images/cancel.png" alt="Delete" style="width:50px;height:50px;" @click="cancel()"/></td>
-        </tr>
-    </table>
-
-
-</div>`,
-  created:function(){
-    
-},
-props:['docName','commentValue','isSaveEnabled','styleClass','showDoc'],
-data: function(){
-return {
-    previousTextValue: this.docName,
-    docTitle:this.docName,
-    docId:'',
-    docText: this.commentValue,
-    defaultDocName:'',
-    isRenderDocument: this.showDoc,
-    documentPlaceholder:'Enter document title.',
-    editDocPlaceholder: 'Edit you doc text here.',
-    hasError:false,
-    errorMessage:''
-};
-},
-methods:{
-    saveDoc:function(){
-        console.log('Doc text:'+this.docText);
-        var response=true;//docView.save(this.docTitle,this.docText);
-        if(response===true||response==='true'){
-            this.hasError=false;
-            this.isRenderDocument=false;
-            this.$emit('messageFromChild');
-            var doc=new Object();
-            doc.docTitle=this.docTitle;doc.docText=this.docText;
-            this.$emit('save-request',doc);
-        }else{
-            this.hasError=true;
-            this.errorMessage='Unable to Save Document.';
-        }
-       
-    },
-    updateDoc:function(){
-        var response=true;//docView.update(this.docName,this.previousTextValue,this.docText);
-        if(response===true||response==='true'){
-            this.hasError=false;
-            this.isRenderDocument=false;
-            this.$emit('messageFromChild');
-            var doc=new Object();
-             doc.docTitle=this.docTitle;doc.docText=this.docText;
-            this.$emit('update-request',doc,this.previousTextValue);
-        }else{
-            this.hasError=true;
-            this.errorMessage='unable to update document.';
-        }
-
-    },
-    deleteDoc:function(){
-        var response=true;//docView.delete(this.docName);
-        if(response===true||response==='true'){
-            this.hasError=false;
-            this.isRenderDocument=false;
-            this.$emit('messageFromChild');
-        }else{
-            this.hasError=true;
-            this.errorMessage='Error message goes here.';
-        }
-
-    },cancel: function(){
-  
-        this.isRenderDocument=false;
-        this.$emit('messageFromChild');
-    }
-    
-},
-computed:{
-    
-}
-};
-
-var docRow= {
-    components:{
-        'render-doc':renderDoc
-    },
-    template: `<div v-show="present">
-    <div  style="padding-left:10%">
-        <div class="table">
-            <div class="row">
-                <div class="td">
-                    
-                    <button type="button" :name="updatedDocTitle" class="btn btn-secondary"  @click="openDoc()" :value="updatedDocTitle">{{updatedDocTitle}}</button>
-                </div>
-                <div class="td">
-                    <img src="../images/trash.png" style="width:35%;float:right;cursor:pointer;"  @click="deleteDoc()"/>
-                </div>
-            </div>
+Vue.component('vuejs-datepicker', vuejsDatepicker);
+Vue.component('register-template' ,{
+        component:{
+            'vuejs-datepicker':vuejsDatepicker
+        },
+        template:` <div><div>
+        <div v-if="loading">
+            Please wait while we are loading data.
         </div>
-        <div class="has-error" v-show="hasError">{{errorMessage}}</div>
-    </div>
-    <br>
-    <div v-show="isEnabled">
-        <render-doc v-on:update-request="updateDoc" v-on:messageFromChild="listenMessageFromChild" v-bind:docName="updatedDocTitle" v-bind:showDoc="present" v-bind:isSaveEnabled="isSaveEnabled" v-bind:commentValue="docValue"></render-doc>
-    </div>
-    <br/>
-</div>`,
+        <div class="form-group">
+            <input type="text" :disabled="disabled" class="form-control"  v-model="emailId" :placeholder="emailPlaceholder" />
+            <input type="text" class="form-control"  v-model="userName" :placeholder="userNamePlaceholder"/>
+            <input type="password" class="form-control"  v-model="password" :placeholder="passwordPlaceHolder"/>
+            <input type="text" @keypress="onlyNumber" maxlength="10"  class="form-control"  v-model="mobileNumber" :placeholder="mobileNumberPlaceHolder" />
+            <b>Birth Date:</b> <vuejs-datepicker v-model="birthday"></vuejs-datepicker>
+            <div class="td" style="padding:10%;"><button  class="btn btn-secondary" @click="signUp()">{{SignUpTitle}} </button></div>
+        </div>
+        <div class="has-error" ><b>{{errorMessage}}</b></div></div> 
+        </div>`,
+    
+    props:[],
     created:function(){
-      console.log('created:'+this.updatedDocTitle);
-            this.updatedDocTitle= this.title;
-    },
-    props:['title','docValue','document'],
-    data:function(){
-        return {
-            updatedDocTitle: this.title,
-            isEnabled:false,
-            present:true,
-            docText:this.docValue,
-            isSaveEnabled:false,
-            errorMessage:'',
-            hasError:false
-            //buttonTitle:this.title
-        };
-    },
-    computed:{
-        buttonTitle:function(){
-            return this.title;
-        }
-    },
-    
-    methods:{
-        openDoc: function(){
-            this.isEnabled=true;
-        },
-        deleteDoc: function(){
-            var response=true;//docView.delete(this.updatedDocTitle);
-            if(response===true||response==='true'){
-                this.hasError=false;
-                this.isEnabled=false;
-                this.present=false;
-                this.$emit('deletRequestFromChild',this.updatedDocTitle);
-            }else{
-                this.hasError=true;
-                this.errorMessage='Unable to delete document.';
-            }
-
-
-        },
-        updateDoc : function(doc,oldDocTitle){
-            this.$emit('update-doc-row',doc,oldDocTitle);
-        },
-        listenMessageFromChild: function(){
-            this.isEnabled=false;
-        }
-    }
-};
-
-    
-   
-     
-    Vue.component('createDocument' ,{
-        components:{
-            'render-doc':renderDoc
-        },
-        template:`<div>
-        <div  v-show="isEnabled">
-            <render-doc v-on:save-request="triggerSave"  :isSaveEnabled="isSaveEnabled" ></render-doc>
-        </div>
-        <div class="w3-col l3 s6" v-show="isCreateDocTemplateEnabled">
-            <div class="w3-container">
-                <div class="w3-display-container">
-                    <img src="../images/doc.png" style="width:100%;" /><!--../images/doc.png-->
-
-                    <div class="w3-display-middle w3-display-hover">
-                        <button class="w3-button w3-black" @click="addDoc()">Add Document<i class="fa "></i></button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>`,
-    
-    props:['textValue'],
-    created:function(){
+        axios.get('http://localhost:8081/preRegistrationData.json', 
+        {headers: 
+        {'x-registration-token':window.localStorage.getItem('x-registration-token')}})
+          .then((response) => {
+              if(response.status==200){
+                if(response.data.statusCode==200){
+                    this.emailId=response.data.emailId;
+                    this.hasError=false;
+                    this.loading=false;
+                    this.showRegistrationPage=true;
+                }else{
+                    window.localStorage.removeItem('x-registration-token');
+                    this.errorMessage=response.data.message;
+                    this.hasError=true;
+                }
+              }
+           // console.log(response);
+          }, (error) => {
+            this.errorMessage=error.data.message;
+            this.hasError=true;
+          //  console.log(error);
+          });
     },
     computed:{
         
     },
     data:function(){
        return { 
-        docName:'New Doc',
-        isSaveEnabled:true,
-        isEnabled:false,
-        isCreateDocTemplateEnabled:true,
-        documentPlaceholder:'Enter document title.',
-        editDocPlaceholder: 'Edit you doc text here.'
+        emailPlaceholder: 'Enter your email id',
+        userNamePlaceholder: 'Enter your name',
+        passwordPlaceHolder: 'Enter your password',
+        mobileNumberPlaceHolder: 'Enter your Mobile number',
+        birthdayPlaceHolder: 'Select your birthday ',
+        SignUpTitle: 'Register',
+        showRegistrationPage:false,
+        loading:true,
+        showRegister:false,
+        password:'',
+        emailId:'',
+        userName:'',
+        mobileNumber:'',
+        birthday:new Date(1990, 9,  16),
+        errorMessage:'',
+        hasError:false,
+        date: new Date(1990, 9,  16),
+        disabled:true
         };
     },
     methods:{
-        triggerSave: function(doc){
-            this.isEnabled=false;
-            this.isCreateDocTemplateEnabled=true;
-            this.$emit('update-doc-row',doc);
-        },
-        addDoc:function(){
-            this.isEnabled=true;
-            this.isSaveEnabled=true;
-            this.isCreateDocTemplateEnabled=false;
-           
-        },
-        listenMessageFromChild: function(){
-            this.isEnabled=false;
-            this.isCreateDocTemplateEnabled=true;
+        onlyNumber: function($event) {
+            //console.log($event.keyCode); //keyCodes value
+            if(this.mobileNumber){
+
+            }
+            let keyCode = ($event.keyCode ? $event.keyCode : $event.which);
+            if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) { // 46 is dot
+               $event.preventDefault();
+            }
+         },
+       signUp:function(){
+
+            axios.post('http://localhost:8081/register.json', 
+            {userName: this.userName, password: this.password,
+                emailId:this.emailId,birthday:this.birthday,mobileNumber:this.mobileNumber},
+            {headers: { 'x-registration-token':window.localStorage.getItem('x-registration-token')}})
+              .then((response) => {
+                  if(response.status==200){
+                    if(response.data.statusCode==200){
+                        window.localStorage.setItem('x-user-onboard-token',response.data.token);
+                        this.errorMessage='Registration successful';
+                        this.hasError=false;
+                        this.$emit('show-options');
+                        window.localStorage.removeItem('x-registration-token');
+                        setInterval(this.callAuth, 60000);
+                    }else{
+                        if(response.data.fieldErrors!=undefined){
+                            this.errorMessage=response.data.fieldErrors[0].message;
+                        }else{
+                        this.errorMessage=response.data.message;
+                        this.hasError=true;
+                        }
+                    }
+                  }
+               // console.log(response);
+              }, (error) => {
+                this.errorMessage=error.data.message;
+                this.hasError=true;
+                //console.log(error);
+              });
+        },callAuth: function(){
+            var timeout=setTimeout(this.authToken, 10000);
+            //clearTimeout(timeout);
+        },authToken: function(){
+            axios.get('http://localhost:8082/isActive.json', 
+                    { headers: { 'x-user-onboard-token':window.localStorage.getItem('x-user-onboard-token')}})
+                .then((response) => {
+                    if(response.status==200){
+                        if(response.data.active==true || response.data.active=='true'){
+                            //setInterval(this.authToken(), 60000);
+                        }else {
+                        window.localStorage.removeItem('x-user-onboard-token');
+                        window.localStorage.removeItem('x-registration-token');
+                        window.location.reload(true);
+                        this.hasError=false;
+                        //this.$emit('show-options');
+                    }
+                }
+                //console.log(response);
+                }, (error) => {
+                    window.localStorage.removeItem('x-user-onboard-token');
+                        window.localStorage.removeItem('x-registration-token');
+                        window.location.reload(true);
+               // console.log(error);
+                });
         }
     }
     });
 
     Vue.component('login-template' ,{
         template:` <div>
-        <div class="table" v-if="isHomeRequest">
-            <div class="row">
-                <div class="td" style="padding:10%;"><button  class="btn btn-secondary" @click="login()">{{loginTitle}} </button></div>
-                <div class="td" style="padding:10%;"><button  class="btn btn-secondary" @click="register()">{{SignUpTitle}} </button></div>
-            </div>
-        </div>
-        <div class="form-group" v-else-if="showLogin">
+            <div class="form-group">
+            <input type="text" class="form-control"  v-model="emailId" :placeholder="emailPlaceHolder" />
             <input type="password" class="form-control"  v-model="password" :placeholder="passwordPlaceHolder"/>
 
             <div class="table">
                 <div class="row">
                     <div class="td" style="padding:10%;"><button  class="btn btn-secondary" v-on:keyup="clearError()" @click="loginRequest()">{{loginTitle}} </button></div>
-                    <div class="td" style="padding:10%;"><button  class="btn btn-secondary" v-on:keyup="clearError()" @click="cancelRequest()">{{cancel}} </button></div>
-                </div>
-            </div>
-        </div>
-        <div class="form-group" v-else-if="showRegister">
-            <input type="text" class="form-control" v-on:keyup="clearError()"  v-model="password" :placeholder="passwordPlaceHolder"/>
-            <input type="text" class="form-control" v-on:keyup="clearError()" v-model="confirmPassword" :placeholder="confirmPasswordPlaceHolder"/>
-            <div class="table">
-                <div class="row">
-                    <div class="td" style="padding:10%;"><button  class="btn btn-secondary" @click="signUp()">{{SignUpTitle}} </button></div>
-                    <div class="td" style="padding:10%;"><button  class="btn btn-secondary" v-on:keyup="clearError()" @click="cancelRequest()">{{cancel}} </button></div>
                 </div>
             </div>
         </div>
@@ -271,15 +163,10 @@ var docRow= {
     data:function(){
        return { 
         loginTitle: 'Login',
-        SignUpTitle: 'SignUp',
         passwordPlaceHolder: 'Enter your password',
-        confirmPasswordPlaceHolder: 'Confirm your password',
-        cancel:'Cancel',
-        isHomeRequest:true,
-        showLogin:false,
-        showRegister:false,
         password:'',
-        confirmPassword:'',
+        emailId:'',
+        emailPlaceHolder:'Please enter you email',
         errorMessage:'',
         hasError:false
         };
@@ -290,49 +177,61 @@ var docRow= {
             this.showLogin=false;
             this.isHomeRequest=false;this.showRegister=true;
         },loginRequest:function(){
-            var response='SUCCESS';//docView.login(this.password);
-                            if(response==='SUCCESS'){
-                                 this.hasError=false;
-                                this.$emit('show-options');
-                            }else if(response==='FAILURE'){
-                                this.errorMessage='incorrect password!';
-                                                this.hasError=true;
-                            }
-
-
-        },signUp:function(){
-            if(this.password===this.confirmPassword){
-                var response='SUCCESS';//docView.signUp(this.password,this.confirmPassword);
-                if(response==='SUCCESS'){
-                    this.hasError=false;
-                    this.$emit('show-options');
-                }else if(response==='FAILURE'){
-                    this.errorMessage='Unable to SignUp.';
-                    this.hasError=true;
-                }
-                //this.$emit('show-options');
-            }else{
-                this.errorMessage='Password do not match!';
-                this.hasError=true;
-            }
+            
+            axios.post('http://localhost:8082/authenticate.json', {userName: this.emailId, password: this.password
+              })
+              .then((response) => {
+                  if(response.status==200){
+                    if(response.data.statusCode==200){
+                        window.localStorage.setItem('x-user-onboard-token',response.data.token);
+                        this.hasError=false;
+                        this.$emit('show-options');
+                        var interval=setInterval(this.callAuth, 20000);
+                        //clearInterval(interval);
+                    }else{
+                        this.errorMessage=response.data.message;
+                        this.hasError=true;
+                    }
+                  }
+                //console.log(response);
+              }, (error) => {
+                //console.log(error);
+              });
         },
-        login:function(){
-            this.showLogin=true;
-            this.isHomeRequest=false;this.showRegister=false;
+        callAuth: function(){
+            var timeout=setTimeout(this.authToken, 10000);
+            //clearTimeout(timeout);
         },
         clearError: function(){
             this.hasError=false;
-        },
-        cancelRequest: function(){
-            this.hasError=false;
-            this.showLogin=false;
-             this.isHomeRequest=true;
-             this.showRegister=false;
+            this.errorMessage='';
+        },authToken: function(){
+            axios.get('http://localhost:8082/isActive.json', 
+                    { headers: { 'x-user-onboard-token':window.localStorage.getItem('x-user-onboard-token')}})
+                .then((response) => {
+                    if(response.status==200){
+                        if(response.data.active==true || response.data.active=='true'){
+                           //setInterval(this.authToken(), 60000);
+                        }else {
+                        window.localStorage.removeItem('x-user-onboard-token');
+                        window.localStorage.removeItem('x-registration-token');
+                        window.location.reload(true);
+                        this.hasError=false;
+                        //this.$emit('show-options');
+                    }
+                }
+               // console.log(response);
+                }, (error) => {
+                    window.localStorage.removeItem('x-user-onboard-token');
+                        window.localStorage.removeItem('x-registration-token');
+                        window.location.reload(true);
+               // console.log(error);
+                });
         }
     }
     });
 
-    Vue.component('button-component',{
+    Vue.component('logout-component',{
         props:{
             doc:{
                 type:Object
@@ -342,77 +241,229 @@ var docRow= {
               count: 0
             }
           },
-        template: '<button v-on:click="count++">You clicked me {{doc.docTitle}} {{ count }} times.</button>'
+          methods:{
+            logout:function(){
+                axios.get('http://localhost:8082/logout.json', 
+                    { headers: { 'x-user-onboard-token':window.localStorage.getItem('x-user-onboard-token') }})
+                .then((response) => {
+                    if(response.status==200){
+                        window.localStorage.removeItem('x-user-onboard-token');
+                        window.localStorage.removeItem('x-registration-token');
+                        window.location.reload(true);
+                    }
+                //console.log(response);
+                }, (error) => {
+                    window.localStorage.removeItem('x-user-onboard-token');
+                    window.localStorage.removeItem('x-registration-token');
+                    window.location.reload(true);
+                    
+                //console.log(error);
+                });
+            }
+          },
+        template: '<button class="btn btn-secondary" v-on:click="logout()">Logout</button>'
+    });
+
+    Vue.component('create-registration-url-component',{
+        props:{
+            
+        }, data: function () {
+            return {
+                emailId: '',
+                emailPlaceHolder:'Please enter user email Id to send them link.',
+                errorMessage:''
+            }
+          },
+          methods:{
+            sendRegistrationLink:function(){
+                axios.get('http://localhost:8081/sendRegistrationMail.json?emailId='+this.emailId, 
+                    { headers: { 'x-user-onboard-token':window.localStorage.getItem('x-user-onboard-token') }})
+                .then((response) => {
+                    if(response.status==200){
+                    if(response.data.statusCode==200){
+                        this.errorMessage=response.data.message;
+                        this.hasError=false;
+                    }else{
+                        this.errorMessage=response.data.message;
+                        this.hasError=true;
+                    }
+                    }
+                //console.log(response);
+                }, (error) => {
+                   // window.location.href = "http://service.registry.com:8080/home";
+               // console.log(error);
+                });
+            }
+          },
+        template: '<div><table><tr><td><input type="text" class="form-control"  v-model="emailId" :placeholder="emailPlaceHolder"/></td><td><button  class="btn btn-secondary" v-on:click="sendRegistrationLink()">Generate Link</button></td></tr></table></br>{{errorMessage}}</div>'
+    });
+
+    Vue.component('registered-users-component',{
+        props:['userName','registrationDate']
+        , created:function(){
+            console.log(window.localStorage.getItem('x-user-onboard-token'));
+            axios.get('http://localhost:8081/listSucessfulRegisteredusers.json', 
+                    { headers: { 'x-user-onboard-token':window.localStorage.getItem('x-user-onboard-token') }})
+                .then((response) => {
+                    if(response.status==200){
+                    if(response.data.statusCode==200){
+                        this.userList=response.data.userList;
+                        this.hasError=false;
+                    }else{
+                        this.errorMessage=response.data.message;
+                        this.hasError=true;
+                    }
+                    }
+                //console.log(response);
+                }, (error) => {
+                   // window.location.href = "http://service.registry.com:8080/home";
+                //console.log(error);
+                });
+        }, data: function () {
+            return {
+                userList:[],
+                errorMessage:''
+            }
+          },
+          methods:{
+            
+          },
+        template: '<div><table><tr><td>User </td><td>Registration Status</td><td> Registration link active status</td><td>Session</td></tr><tr v-for="user in userList"><td> {{user.emailId}} </td><td>{{user.status}}</td><td>{{user.active}}</td>  <td>{{user.sessionId}}</td></tr></table></br>{{errorMessage}}</div>'
+    });
+
+    Vue.component('active-users-component',{
+        props:['activeUserName','sessionId']
+        , created:function(){
+            axios.get('http://localhost:8082/listOfActiveUsers.json', 
+                    { headers: { 'x-user-onboard-token':window.localStorage.getItem('x-user-onboard-token') }})
+                .then((response) => {
+                    if(response.status==200){
+                    if(response.data.statusCode==200){
+                        this.userList=response.data.userList;
+                        this.hasError=false;
+                    }else{
+                        this.errorMessage=response.data.message;
+                        this.hasError=true;
+                    }
+                    }
+                //console.log(response);
+                }, (error) => {
+                    
+                   // window.location.href = "http://service.registry.com:8080/home";
+                //console.log(error);
+                });
+        }, data: function () {
+            return {
+                userList:[],
+                errorMessage:''
+            }
+          },
+          methods:{
+            
+          },
+        template: '<div><table><tr><td>User</td><td>Session</td></tr><tr v-for="user in userList"> <td>{{user.userName}} </td><td>{{user.token}}</td></tr></table></br>{{errorMessage}}</div>'
     });
 
     var documentManagerApp = new Vue({
         el: '#docApp',
         components:{
-            'doc-row':docRow
+            
         },   
-        props:['errorMessage','SignUpTitle','loginTitle','cancel','docText'],
+        props:[],
         created: function (){
-          /*  var response=docView.fetchAllDoc();
-            console.log('response from services:'+response);
-            if(response!=='EMPTY')
-             {
-                this.docs=JSON.parse(response);
-              }*/
+           // console.log('Executing');
+            //var queryParam= this.$route!==undefined?this.$route.query.regToken:undefined;
+            const params = new URLSearchParams(window.location.search)
+
+           if(params.has('x-registration-token')){
+           // console.log('sending registration request');
+             window.localStorage.setItem('x-registration-token',params.get('x-registration-token'));
+             this.showRegistrationPage=true;
+           }else if(window.localStorage.getItem('x-user-onboard-token')!=undefined && window.localStorage.getItem('x-user-onboard-token')!=null){
+           // console.log('validating--');   
+            axios.get('http://localhost:8082/validateToken.json', 
+                    { headers: { 'x-user-onboard-token':window.localStorage.getItem('x-user-onboard-token')}})
+                .then((response) => {
+                    if(response.status==200){
+                        if(response.data.statusCode==200){
+                            this.showContent=true;
+                            this.isAdmin=true;
+                            this.logoutEnabled=true;
+                        }else {
+                        window.localStorage.removeItem('x-user-onboard-token');
+                        window.localStorage.removeItem('x-registration-token');
+                        window.location.reload(true);
+                        this.hasError=false;
+                        //this.$emit('show-options');
+                    }
+                }
+                //console.log(response);
+                }, (error) => {
+                    window.localStorage.removeItem('x-user-onboard-token');
+                    window.localStorage.removeItem('x-registration-token');
+                    window.location.reload(true);
+                        window.location.reload(true);
+               // console.log(error);
+                });
+           }else{
+               //console.log('showing login page');
+            this.showLoginPage=true;
+           }
             this.isDataInitialized=true;
         },
         data:{
             isDataInitialized:false,
-            docs:[{docTitle:'FirstDoc',docText:'docTex is here!'},{docTitle:'FirstDoc1',docText:'docTex is here!'},{docTitle:'FirstDoc2',docText:'docTex is here!'}] ,
-            showLoginPage:true
+            showContent:false,
+            showLoginPage:false,
+            showRegistrationPage:false,
+            isAdmin:false,
+            isCreateRegLink:false,
+            showRegisteredUserComponent:false,
+            showActiveUserComponent:false,
+            errorMessage:'',
+            logoutEnabled:false
         },
         methods:{
+            showCreateRegLink: function(){
+                this.isCreateRegLink=true;
+                this.showRegisteredUserComponent=false;
+                this.showActiveUserComponent=false;
+            },
+            showRegisteredUsers: function(){
+               
+                this.isCreateRegLink=false;
+                this.showRegisteredUserComponent=true;
+                this.showActiveUserComponent=false;
+               
+               
+            },
+            showActiveUsersSession: function(){
+                
+                this.isCreateRegLink=false;
+                this.showRegisteredUserComponent=false;
+                this.showActiveUserComponent=true;
+            },
             updateDocsRows : function(doc){
                 this.docs.push(JSON.parse(JSON.stringify(doc)));
             },
-            hideLogin: function(){
-                var response='EMPTY';//docView.fetchAllDoc();
-                 //console.log('response from services:'+response);
-                 if(response!=='EMPTY')
-                 {
-                 var data=JSON.parse(response);
-                 for(var counter=0;counter<data.length;counter++){
-                    var documents=new Object();
-                    document.docTitle=data[counter].docTitle;
-                    document.docText=data[counter].docText;
-                    this.docs.push(document);
-                 }
-
-                 }
+            hideRegistration: function(){
+              //  console.log('hitting');
+                this.showRegistrationPage=false;
+                this.showContent=true;
                 this.showLoginPage=false;
-
+                this.logoutEnabled=true;
             },
-            removeDoc: function(docName){
-                var data=[];
-                if(this.docs!=null){
-                    for(var counter=0;counter<this.docs.length;counter++){
-                        if(!docName===this.docs[counter] ){
-                            data.push(this.docs[counter]);
-                        }
-
-                    }
-                    this.docs=data;
-                }
-            },
-            updateDocRow : function(doc,oldDocTitle){
-            doc=JSON.parse(JSON.stringify(doc));
-                for(var counter=0;counter<this.docs.length;counter++){
-                    if(oldDocTitle === this.docs[counter].docTitle){
-                        this.docs[counter].docTitle=doc.docTitle;
-                        this.docs[counter].docText=doc.docText;
-                        break;
-                    }
-                }
+            hideLogin: function(){
+              //  console.log('hitting---');
+                this.showRegistrationPage=false;
+                this.showContent=true;
+                this.showLoginPage=false;
+                this.logoutEnabled=true;
+                this.isAdmin=true;
             }
         },
        computed: {
-           documentsList: function(){
-               return this.docs;
-           }
+           
        }
     })
 
