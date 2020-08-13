@@ -40,7 +40,7 @@ import com.onboard.util.JwtTokenUtil;
  *         10-Aug-2020
  */
 
-@Component
+//@Component
 public class AuthenticationFilter extends OncePerRequestFilter {
 
 	private static final String TOKEN_HEADER = "x-user-onboard-token";

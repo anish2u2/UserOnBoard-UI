@@ -44,10 +44,10 @@ import com.onboard.filters.AuthenticationFilter;
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@EnableWebSecurity
+//@EnableWebSecurity
 public class UserOnBoardConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
-	@Autowired
+	//@Autowired
 	private AuthenticationFilter authFilter;
 	
 	@Autowired
@@ -60,9 +60,8 @@ public class UserOnBoardConfig extends WebSecurityConfigurerAdapter implements W
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
-		http.csrf().disable().authorizeRequests().antMatchers("/login","home","/register").permitAll().anyRequest().authenticated().and()
-				.formLogin().loginPage("/login").permitAll().and().logout().permitAll();
+		//http.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+		http.csrf().disable().authorizeRequests().anyRequest().permitAll();
 		
 	}
 	

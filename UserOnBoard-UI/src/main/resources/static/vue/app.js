@@ -33,6 +33,7 @@ Vue.component('register-template' ,{
                     this.showRegistrationPage=true;
                 }else{
                     window.localStorage.removeItem('x-registration-token');
+                    window.localStorage.removeItem('x-user-role');
                     this.errorMessage=response.data.message;
                     this.hasError=true;
                 }
@@ -123,6 +124,7 @@ Vue.component('register-template' ,{
                         }else {
                         window.localStorage.removeItem('x-user-onboard-token');
                         window.localStorage.removeItem('x-registration-token');
+                        window.localStorage.removeItem('x-user-role');
                         window.location.reload(true);
                         this.hasError=false;
                         //this.$emit('show-options');
@@ -130,6 +132,7 @@ Vue.component('register-template' ,{
                 }
                 //console.log(response);
                 }, (error) => {
+                    window.localStorage.removeItem('x-user-role');
                     window.localStorage.removeItem('x-user-onboard-token');
                         window.localStorage.removeItem('x-registration-token');
                         window.location.reload(true);
@@ -184,6 +187,7 @@ Vue.component('register-template' ,{
                   if(response.status==200){
                     if(response.data.statusCode==200){
                         window.localStorage.setItem('x-user-onboard-token',response.data.token);
+                        window.localStorage.setItem('x-user-role',response.data.role);
                         this.hasError=false;
                         this.$emit('show-options');
                         var interval=setInterval(this.callAuth, 20000);
@@ -215,6 +219,7 @@ Vue.component('register-template' ,{
                         }else {
                         window.localStorage.removeItem('x-user-onboard-token');
                         window.localStorage.removeItem('x-registration-token');
+                        window.localStorage.removeItem('x-user-role');
                         window.location.reload(true);
                         this.hasError=false;
                         //this.$emit('show-options');
@@ -222,6 +227,7 @@ Vue.component('register-template' ,{
                 }
                // console.log(response);
                 }, (error) => {
+                    window.localStorage.removeItem('x-user-role');
                     window.localStorage.removeItem('x-user-onboard-token');
                         window.localStorage.removeItem('x-registration-token');
                         window.location.reload(true);
@@ -249,10 +255,13 @@ Vue.component('register-template' ,{
                     if(response.status==200){
                         window.localStorage.removeItem('x-user-onboard-token');
                         window.localStorage.removeItem('x-registration-token');
+                        window.localStorage.removeItem('x-user-role');
+                        window.location.href = "http://localhost:8080/home";
                         window.location.reload(true);
                     }
                 //console.log(response);
                 }, (error) => {
+                    window.localStorage.removeItem('x-user-role');
                     window.localStorage.removeItem('x-user-onboard-token');
                     window.localStorage.removeItem('x-registration-token');
                     window.location.reload(true);
@@ -387,11 +396,15 @@ Vue.component('register-template' ,{
                     if(response.status==200){
                         if(response.data.statusCode==200){
                             this.showContent=true;
-                            this.isAdmin=true;
+                            this.isAdmin=response.data.role==1?true:false;
+                            if(window.localStorage.getItem('x-user-role')==1){
+                                this.isAdmin=true;
+                            }
                             this.logoutEnabled=true;
                         }else {
                         window.localStorage.removeItem('x-user-onboard-token');
                         window.localStorage.removeItem('x-registration-token');
+                        window.localStorage.removeItem('x-user-role');
                         window.location.reload(true);
                         this.hasError=false;
                         //this.$emit('show-options');
@@ -401,6 +414,7 @@ Vue.component('register-template' ,{
                 }, (error) => {
                     window.localStorage.removeItem('x-user-onboard-token');
                     window.localStorage.removeItem('x-registration-token');
+                    window.localStorage.removeItem('x-user-role');
                     window.location.reload(true);
                         window.location.reload(true);
                // console.log(error);
