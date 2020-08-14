@@ -15,6 +15,9 @@
 <script src="../vue/vue-router.js" type="application/javascript"></script>
 <script src="../vue/vuejs-datepicker.min.js" type="application/javascript"></script>
 <style>
+.redirect{
+display: none;
+}
 .w3-sidebar a {font-family: "Roboto", sans-serif}
 body,h1,h2,h3,h4,h5,h6,.w3-wide {font-family: "Montserrat", sans-serif;}
 td {
@@ -26,7 +29,7 @@ td {
     <!-- Sidebar/menu -->
     <!--menu-bar></menu-bar>-->
 
-
+	<a id="redirect" class="redirect" href="http://localhost:8080/home">logout</a> 
     <!-- !PAGE CONTENT! -->
     <div class="w3-main" style="margin-left:250px">
 

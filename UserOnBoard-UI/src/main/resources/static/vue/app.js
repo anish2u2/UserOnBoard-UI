@@ -256,15 +256,22 @@ Vue.component('register-template' ,{
                         window.localStorage.removeItem('x-user-onboard-token');
                         window.localStorage.removeItem('x-registration-token');
                         window.localStorage.removeItem('x-user-role');
-                        window.location.href = "http://localhost:8080/home";
-                        window.location.reload(true);
+                       /* window.location.href="http://localhost:8080/home";
+                        window.location.replace("http://localhost:8080/home")
+                        location.assign("http://localhost:8080/home");
+                        window.location.reload(true);*/
+                        document.getElementById("redirect").click();
                     }
                 //console.log(response);
                 }, (error) => {
                     window.localStorage.removeItem('x-user-role');
                     window.localStorage.removeItem('x-user-onboard-token');
                     window.localStorage.removeItem('x-registration-token');
-                    window.location.reload(true);
+                   /* window.location.href="http://localhost:8080/home";
+                    window.location.replace("http://localhost:8080/home")
+                    location.assign("http://localhost:8080/home");
+                    window.location.reload(true);*/
+                    document.getElementById("redirect").click();
                     
                 //console.log(error);
                 });
